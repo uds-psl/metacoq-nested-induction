@@ -1,0 +1,6 @@
+[submodule "metacoq"]
+	path = metacoq
+	url = https://github.com/MetaCoq/metacoq.git
+[submodule "metacoq_8_9"]
+	path = metacoq_8_9
+	url = https://github.com/MetaCoq/metacoq.git
