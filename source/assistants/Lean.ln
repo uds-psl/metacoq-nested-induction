@@ -1,0 +1,32 @@
+universe u
+
+mutual inductive tree, list_tree (α : Type u)
+with tree : Type u
+| node : α → list_tree → tree
+with list_tree : Type u
+| nil {} : list_tree
+| cons    : tree → list_tree → list_tree
+
+inductive tree2 (α : Type u)
+| mkTree : α → list tree2 → tree2
+
+#print tree
+
+#check tree.node
+
+#print tree2
+
+#check tree2
+#check tree2.mkTree nat
+
+
+inductive tree3
+| mkTree : list tree3 → tree3
+
+#print tree3
+#check tree3
+#check tree3.mkTree
+#check _nest_1_1.tree3.mkTree
+#print tree3.mkTree
+#print tree3.pack_0_0
+-- #check tree3_ind

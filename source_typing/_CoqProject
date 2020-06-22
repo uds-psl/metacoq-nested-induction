@@ -1,0 +1,12 @@
+-I ../metacoq_8_9/template-coq/build
+-I ../metacoq_8_9/checker/src
+-I ../metacoq_8_9/safechecker/src
+-I ../metacoq_8_9/erasure/src
+-Q ../metacoq_8_9/template-coq/theories MetaCoq.Template
+-Q ../metacoq_8_9/checker/theories MetaCoq.Checker
+-Q ../metacoq_8_9/pcuic/theories MetaCoq.PCUIC
+-Q ../metacoq_8_9/safechecker/theories MetaCoq.SafeChecker
+-Q ../metacoq_8_9/erasure/theories MetaCoq.Erasure
+-R . ""
+
+typing.v
