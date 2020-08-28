@@ -1,7 +1,25 @@
 
 (** a test for the derivation of new container types **)
+Inductive or2 (A B : Prop) : Type :=
+	or2_introl : A -> or2 A B | or2_intror : B -> or2 A B.
 
 Load addContainer.
+
+
+(* MetaCoq Run (addType or). *)
+(* MetaCoq Run (addType sum). *)
+
+(* MetaCoq Run (addType or2). *)
+(* Next Obligation. *)
+(*   induction H. *)
+
+(*   induction H eqn: X. *)
+(*   dependent induction H. *)
+(*   induction H. *)
+(*   destruct H. *)
+(*   - now constructor. *)
+(*   - now constructor. *)
+(* Defined. *)
 
 
 

@@ -92,6 +92,7 @@ this function is very close to the one in destruct_lemma
 
 (* assumption also indicates if proof is generated *)
 Fixpoint augmentType (ind:term) (assumption:option term) (args fullargs:list term) (t:term) : term := 
+      let (_,concl) := decompose_prod t in
   match t with
   | tProd na t1 t2 =>
       let sortType :=
@@ -105,7 +106,10 @@ Fixpoint augmentType (ind:term) (assumption:option term) (args fullargs:list ter
         if sortType then 
           vass (nameAppend na "P") (tProd nAnon (* P:X->Type *)
             (tRel 0)
-            (trans <% Type %>)
+            (* (trans <% Prop %>) *)
+            (* (trans <% nat %>) *)
+            t1
+            (* concl2 *)
           )::
           (
             if assumption then
@@ -141,7 +145,11 @@ Fixpoint augmentType (ind:term) (assumption:option term) (args fullargs:list ter
         (mkApps ind args)
         (
           match assumption with
-            None => trans <% Type %>
+            None =>  (* at conclusion *)
+              (* (trans <% Prop %>) *)
+              (* (trans <% nat %>) *)
+              (* (trans <% Type %>) *)
+              concl
           | Some ass => mkApps ass (map (lift0 1) fullargs ++ [tRel 0])
           (* | Some ass => mkApps ass (fullargs) *)
           end
@@ -220,6 +228,9 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
       (* print_nf assT';; *)
       (* print_nf assT;; *)
       (* print_nf assI;; *)
+      (* print_nf concl;; *)
+      (* print_nf tq;;
+      print_nf T;; *)
 
       (* let (assTE,assIE) := assI : typed_term in *)
       (* assIE <- tmEval all (assI.(my_projT2));; *)
