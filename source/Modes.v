@@ -7,13 +7,14 @@ Import MonadNotation.
 Class mode (s:string) := { state: bool }.
 
 Print tmExistingInstance.
+Print tmFreshName.
 Print global_reference.
 
 Definition changeMode (m:string) (value:bool) : TemplateMonad unit :=
   ename <- tmEval all m;;
   name <- tmFreshName ename;;
   tmDefinition name ({| state := value |}:mode m);;
-  tmExistingInstance name;;
+  tmExistingInstance (VarRef name);;
   tmMsg (append (append "The mode " m) (append " was " (if value then "set" else "unset"))).
 
 Definition getMode (m:string) : TemplateMonad bool :=

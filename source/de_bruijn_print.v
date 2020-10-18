@@ -113,7 +113,7 @@ Fixpoint bruijn_print_aux (t:term) : TemplateMonad string :=
     s1 <- bruijn_print_aux t1;;
     s2 <- bruijn_print_aux t2;;
     tmReturn("(" +s s1 +s " " +s s2 +s ")")
-  | tConst kn ui => tmReturn(kn)
+  | tConst kn ui => let (_,name) := kn in tmReturn name
   | tInd ind ui => getInductiveName ind.(inductive_mind) ind.(inductive_ind)
   | tConstruct ind n ui => getConstructName ind.(inductive_mind) ind.(inductive_ind) n
   | tCase (ind,n) p c brs =>

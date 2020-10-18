@@ -129,6 +129,11 @@ let rmt := removeArgList tp.1 xs 0 in
       ind.(ind_projs)
   ).
 
+  (* Print kername.
+  Print mutual_inductive_body.
+  Search modpath one_inductive_body.
+  Print ind_name. *)
+
 Definition cleanInd (kname:kername) (idx:nat) (u:Instance.t) :=
     mind <- tmQuoteInductive kname;;
     nparam <- (removeNonAugList (rev mind.(ind_params)));;

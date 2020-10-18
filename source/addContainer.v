@@ -166,10 +166,24 @@ Print typed_term.
 
 Print tmEval.
 
+Search TemplateMonad kername.
+Print tmLocate.
+Print qualid.
+(* Print tmAbout. *)
+Definition tmAbout' (k:ident) : TemplateMonad (option global_reference) :=
+  H <- tmLocate k;;
+  match H with
+  | x::_ => tmReturn (Some x)
+  | _ => tmReturn None
+  end.
+
+Definition tmAbout (k:kername) : TemplateMonad (option global_reference) :=
+  tmAbout' (snd k).
+
 Definition getIndProp (kname:kername) (TL:tsl_table) :=
       H <- tmAbout kname;;
       (match H with
-        Some ((IndRef (mkInd kn n)) as R) => 
+         Some((IndRef (mkInd kn n)) as R) => 
         match lookup_tsl_table TL R with
         | Some(Ast.tInd (mkInd kname idx) u) =>
             tmReturn (kname,idx,u)
@@ -182,6 +196,8 @@ Definition getIndProp (kname:kername) (TL:tsl_table) :=
 Print IndRef.
 Print tmUnquote.
 Print typed_term.
+
+Require Import de_bruijn_print.
 
 Definition addType {X} (t:X) :TemplateMonad unit :=
   tq <- tmQuote t;;
@@ -211,7 +227,7 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
 
       kname2' <- cleanInd kname idx u;;
       kname2 <- tmEval all (kname2');;
-      H2 <- tmAbout kname2;;
+      H2 <- tmAbout' kname2;;
       newInd2 <- (match H2 with
         Some ((IndRef (mkInd kn n)) as R) => 
         tmReturn (kn,n)
@@ -228,9 +244,6 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
       (* print_nf assT';; *)
       (* print_nf assT;; *)
       (* print_nf assI;; *)
-      (* print_nf concl;; *)
-      (* print_nf tq;;
-      print_nf T;; *)
 
       (* let (assTE,assIE) := assI : typed_term in *)
       (* assIE <- tmEval all (assI.(my_projT2));; *)
@@ -250,7 +263,7 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
       (* print_nf h;; *)
       (* print_nf proofTt;; *)
       (* tmReturn tt *)
-      (* tmMsg "T1";; *)
+      tmMsg "T1";;
       proofT <- tmUnquoteTyped Type (PCUICToTemplate.trans proofTt);;
       print_nf proofT;;
       (* tmMsg "T1.5";; *)
@@ -258,7 +271,8 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
       (* proofI <- tmLemma newName2 False;; *)
       (* proofI <- tmLemma "H" nat;; *)
       (* proofI <- tmLemma "noName" (proofT : Type);; *)
-      (* tmMsg "T2";; *)
+      tmMsg "T2";;
+
 
       nameString3 <- tmEval lazy (append name "_inst");;
       newName3 <- tmFreshName nameString3;; (* T_inst *)
@@ -270,12 +284,89 @@ Definition addType {X} (t:X) :TemplateMonad unit :=
             proof := @proofI
         |} : registered t
       );;
-      tmExistingInstance newName3;;
+      tmExistingInstance (VarRef newName3);;
 
       tmMsg (append (append "New instance " newName3) " was created")
 
       (* tmMsg "Fin" *)
+
   | _ => 
       @tmFail unit "inductive type is expected"
   end.
 
+(*
+
+      tmMsg "Fin"
+
+  | _ => 
+      @tmFail unit "inductive type is expected"
+  end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      kname2' <- cleanInd kname idx u;;
+      kname2 <- tmEval all (kname2');;
+      H2 <- tmAbout' kname2;;
+
+      newInd2 <- (match H2 with
+        Some ((IndRef (mkInd kn n)) as R) => 
+        tmReturn (kn,n)
+      | _ => tmFail "no inductive after cleaning"
+      end);;
+
+
+      let (kname3,idx3) := newInd2 : kername * nat in
+      let h := Ast.tInd (mkInd kname3 idx3) u in
+
+      let assTt := augmentType (trans tq) None [] [] (trans T) in
+      print_nf assTt;;
+      bruijn_print assTt;;
+      print_nf h;;
+      (* bruijn_print h;; *)
+
+      (* assT <- tmUnquoteTyped Type (PCUICToTemplate.trans assTt);; *) 
+      (* assI <- tmUnquoteTyped (assT:Type) h;; *)
+
+      (* tmMsg "Please provide a proof for the predicate.";; *)
+      (* nameString2 <- tmEval lazy (append name "_proof");; *)
+      (* newName2 <- tmFreshName nameString2;; (1* T_proof *1) *)
+      let proofTt := augmentType (trans tq) (Some (trans h)) [] [] (trans T) in
+      (* proofT <- tmUnquoteTyped Type (PCUICToTemplate.trans proofTt);; *)
+      (* print_nf proofT;; *)
+      print_nf proofTt;;
+      bruijn_print proofTt;;
+
+
+      (* proofI <- tmLemma newName2 (proofT : Type);; *)
+
+      (* nameString3 <- tmEval lazy (append name "_inst");; *)
+      (* newName3 <- tmFreshName nameString3;; (1* T_inst *1) *)
+      (* tmDefinition newName3 ( *)
+      (*   {| *)
+      (*       (1* assumptionType := assTE; *1) *)
+      (*       (1* assumptionType := assT; *1) *)
+      (*       assumption := @assI; *)
+      (*       proof := @proofI *)
+      (*   |} : registered t *)
+      (* );; *)
+      (* tmExistingInstance newName3;; *)
+
+      (* tmMsg (append (append "New instance " newName3) " was created") *)
+
+      tmMsg "Fin"
+  | _ => 
+      @tmFail unit "inductive type is expected"
+  end.
+
+*)

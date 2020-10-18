@@ -53,14 +53,15 @@ Definition errorMessage (name:string) : TemplateMonad unit :=
   tmMsg ("Use `MetaCoq Run Derive Container for " ++ name ++ "` to register " ++ name ++ " as container.").
   (* tmMsg "was not found in the registered database and thus will be ignored.";; *)
 
-
+(* maybe wrong distinction kername / ident *)
 Definition createFunction (inds:list (kername * option nat * Instance.t)) : TemplateMonad( kername -> nat -> option (term×term) ) :=
   monad_fold_left
-  (fun acc '(kname,no,u) =>
+  (fun acc '(kname2,no,u) =>
+            let (_,kname) := kname2 : kername in 
     let object :=
       match no with
-        None => Ast.tConst kname u
-      | Some n => Ast.tInd (mkInd kname n) u
+        None => Ast.tConst kname2 u
+      | Some n => Ast.tInd (mkInd kname2 n) u
       end
     in
     tt <- tmUnquote object;;
@@ -74,7 +75,7 @@ Definition createFunction (inds:list (kername * option nat * Instance.t)) : Temp
             errorMessage kname;;
             tmReturn acc
         | Some n =>
-          mind <- tmQuoteInductive kname;;
+          mind <- tmQuoteInductive kname2;;
           match nth_error (Ast.ind_bodies mind) n with
           | Some oind => 
               match isAugmentable true (trans (Ast.ind_type oind)) with
@@ -96,7 +97,8 @@ Definition createFunction (inds:list (kername * option nat * Instance.t)) : Temp
         proofE <- tmEval lazy proofI;;
         tmReturn
           (fun name i => 
-            if name =? kname then (* TODO use i and no for mutual *)
+            let (_,name2) := name :kername in (* TODO complete comparison needed *)
+            if name2 =? kname then (* TODO use i and no for mutual *)
               Some (
                 TemplateToPCUIC.trans assumE,
                 TemplateToPCUIC.trans proofE
